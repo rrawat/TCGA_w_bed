@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import numpy
 
 def create_mutation_bed():
     with open("/Users/radhikarawat/PycharmProjects/CosmicMutantExport.tsv", "U") as mutation_data_file:
@@ -186,7 +186,7 @@ def exons_to_matrix():
 
 
 def exons_to_matrix_using_np():
-    import numpy
+
     start=datetime.now()
     with open('/Users/radhikarawat/PycharmProjects/TCGA_w_bed/consolidated/TCGA_splice_site_mutations.txt','U') as mutation_file:
         mutation_array= numpy.loadtxt(mutation_file,dtype=str)
@@ -222,4 +222,58 @@ def exons_to_matrix_using_np():
     print datetime.now()-start
 
 def add_genes_to_matrix_np():
+    start=datetime.now()
     with open("/Users/radhikarawat/PycharmProjects/TCGA_w_bed/consolidated/results_array2.txt", "r+") as array_file:
+        array=numpy.loadtxt(array_file, dtype=str)
+
+    gene_dict=create_gene_dict()
+    for i in range(0,array.shape[0]):
+        gene_bps = str(array[i, 0])
+        #print i
+        try:
+            #if gene_bps in gene_dict.keys():
+            array[i,0]=gene_dict[gene_bps]
+            gene_dict[gene_bps]=str(gene_dict[gene_bps])+'*'
+        except KeyError: array[i,0]=gene_bps
+    with open("/Users/radhikarawat/PycharmProjects/TCGA_w_bed/consolidated/exon_v_genes_results_unique.txt",
+              "w") as output_file:
+        numpy.savetxt(output_file, array, delimiter="\t", newline="\n", fmt="%s")
+    print datetime.now()-start, start
+
+def create_plot():
+    start = datetime.now()
+    import pandas as pd
+    df = pd.read_csv("/Users/radhikarawat/PycharmProjects/TCGA_w_bed/consolidated/exon_v_genes_results.txt", sep='\t')
+
+    info = numpy.array(df)
+    # print info[:5,:4]
+
+    print datetime.now()-start, "file loaded"
+    # raise SystemError
+    # #
+    #
+    #start=datetime.now()
+    import matplotlib.pyplot as plt
+    # with open("/Users/radhikarawat/PycharmProjects/TCGA_w_bed/consolidated/exon_v_genes_results.txt",
+    #           "r+") as array_file:
+    #     print "A"
+    #     info=numpy.genfromtxt(array_file, dtype='str', filling_values=0.0)
+    #     # info = numpy.loadtxt(, dtype=str)
+    #print "loaded", datetime.now()-start
+    # #for gene 0
+    y = info[1,1:]
+
+    names = info[0,1:]
+    width = 1 / 1.5
+    print names, y
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+
+    x = np.arange(len(y))
+
+    plt.bar(x, y)
+    plt.xticks(x + 0.5, names, rotation=90)
+    try: plt.show()
+    except: plt.savefig()

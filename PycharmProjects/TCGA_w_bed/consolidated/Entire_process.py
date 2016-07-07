@@ -12,4 +12,7 @@ from functions import *
 
 
 #exons_to_matrix()
-exons_to_matrix_using_np()
+#exons_to_matrix_using_np()
+
+add_genes_to_matrix_np()
+#create_plot()
